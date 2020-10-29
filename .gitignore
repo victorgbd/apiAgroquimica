@@ -1,2 +1,4 @@
 plantas/modelo/AlexNetModel.hdf5
 plantas/modelo/best_weights_9.hdf5
+__pycache__/
+Data/__pycache__/
