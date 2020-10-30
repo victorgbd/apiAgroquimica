@@ -34,15 +34,13 @@ class UserEModelElement:
     apellido: str
     correo: str
     contrasena: str
-    region: str
-    provincia: str
-    municipio: str
-    sector: str
-    calle: str
-    referencia: str
-    tipodoc: str
+    pais: str
+    ciudad: str
+    coddir: str
+    direccion: str
+    tipo: str
     numeracion: str
-    numerotel: str
+    numerotelf: str
 
     @staticmethod
     def from_dict(obj: Any) -> 'UserEModelElement':
@@ -51,16 +49,14 @@ class UserEModelElement:
         apellido = from_str(obj.get("apellido"))
         correo = from_str(obj.get("correo"))
         contrasena = from_str(obj.get("contrasena"))
-        region = from_str(obj.get("region"))
-        provincia = from_str(obj.get("provincia"))
-        municipio = from_str(obj.get("municipio"))
-        sector = from_str(obj.get("sector"))
-        calle = from_str(obj.get("calle"))
-        referencia = from_str(obj.get("referencia"))
-        tipodoc = from_str(obj.get("tipodoc"))
+        pais = from_str(obj.get("pais"))
+        ciudad = from_str(obj.get("ciudad"))
+        coddir = from_str(obj.get("coddir"))
+        direccion = from_str(obj.get("direccion"))
+        tipo = from_str(obj.get("tipo"))
         numeracion = from_str(obj.get("numeracion"))
-        numerotel = from_str(obj.get("numerotel"))
-        return UserEModelElement(nombre, apellido, correo, contrasena, region, provincia, municipio, sector, calle, referencia, tipodoc, numeracion, numerotel)
+        numerotelf = from_str(obj.get("numerotelf"))
+        return UserEModelElement(nombre, apellido, correo, contrasena, pais, ciudad, coddir, direccion, tipo, numeracion, numerotelf)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -68,15 +64,13 @@ class UserEModelElement:
         result["apellido"] = from_str(self.apellido)
         result["correo"] = from_str(self.correo)
         result["contrasena"] = from_str(self.contrasena)
-        result["region"] = from_str(self.region)
-        result["provincia"] = from_str(self.provincia)
-        result["municipio"] = from_str(self.municipio)
-        result["sector"] = from_str(self.sector)
-        result["calle"] = from_str(self.calle)
-        result["referencia"] = from_str(self.referencia)
-        result["tipodoc"] = from_str(self.tipodoc)
+        result["pais"] = from_str(self.pais)
+        result["ciudad"] = from_str(self.ciudad)
+        result["coddir"] = from_str(self.coddir)
+        result["direccion"] = from_str(self.direccion)
+        result["tipo"] = from_str(self.tipo)
         result["numeracion"] = from_str(self.numeracion)
-        result["numerotel"] = from_str(self.numerotel)
+        result["numerotelf"] = from_str(self.numerotelf)
         return result
 
 

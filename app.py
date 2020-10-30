@@ -137,65 +137,50 @@ def user():
     else:
         email  = request.args.get('email', None)
         password  = request.args.get('password', None)
-        bdcursor.execute("SELECT p.nombre,p.apellido,c.correo,u.contrasena,dir.region,dir.Provincia,dir.municipio,dir.sector,dir.Calle"+
-        ",dir.referencia,d.tipo,d.numeracion,tel.numero FROM cliente as c INNER JOIN persona as p on c.codper = p.codper "+
-        "INNER JOIN ver_direccion as dir on p.coddir = dir.Codigo INNER JOIN usuario as u "+
-        "on c.codusuario = u.codusuario inner join documento as d on p.coddocu=d.coddocu "+
-        "inner join telefono as tel on c.codtel=tel.codtel WHERE c.correo = '{}' AND u.contrasena='{}'".format(email,password))
+        bdcursor.execute("SELECT p.nombre,p.apellido,c.correo,u.contrasena,pais.descripcion as pais"+
+        ",ciu.descripcion as ciudad,dir.coddir,dir.Descripcion as direccion,d.tipo,d.numeracion,tel.numero "+
+        "FROM cliente as c INNER JOIN persona as p on c.codper = p.codper INNER JOIN direccion as dir "+
+        "on p.coddir = dir.coddir INNER JOIN pais on dir.codpais = pais.codpais INNER JOIN provincia as ciu"+
+        " on dir.codciudad =ciu.codprovi INNER JOIN usuario as u on c.codusuario = u.codusuario inner join "+
+        "documento as d on p.coddocu=d.coddocu inner join telefono as tel on c.codtel=tel.codtel "+
+        "WHERE c.correo = '{}' AND u.contrasena='{}'".format(email,password))
         myresult = bdcursor.fetchall()
         list_users = []
         print(myresult)
         for x in myresult:
-            us = UserEModelElement(x[0], x[1], x[2],x[3],x[4],x[5],x[6],x[7],x[8],x[9],x[10],x[11],x[12])
+            us = UserEModelElement(x[0], x[1], x[2],x[3],x[4],x[5],str(x[6]),x[7],x[8],x[9],x[10])
             list_users.append(us)
         return json.dumps(user_e_model_to_dict(list_users))
 
 @app.route('/direccion', methods=['GET'])
 def direccion():
-    codregion  = request.args.get('codregion', None)
+    codpais  = request.args.get('codpais', None)
     codprovincia  = request.args.get('codprovincia', None)
-    codmunicipio  = request.args.get('codmunicipio', None)
-    codsector  = request.args.get('codsector', None)
-    if(codregion is None and codprovincia is None and codmunicipio is None and codsector is None):
-        bdcursor.execute("SELECT * FROM region")
+    coddir = request.args.get('coddireccion', None)
+    if(codpais is None and codprovincia is None and coddir is None):
+        bdcursor.execute("SELECT * FROM pais")
         myresult = bdcursor.fetchall()
         list_region = []
         for x in myresult:
             us = {"cod":x[0],"descripcion":x[1]}
             list_region.append(us)
         return json.dumps(list_region)
-    if(codregion is not None):
-        bdcursor.execute("SELECT * FROM provincia where codreg={}".format(codregion))
+    elif(codpais is not None):
+        bdcursor.execute("SELECT * FROM provincia where codpais={}".format(codpais))
         myresult = bdcursor.fetchall()
         list_provin = []
         for x in myresult:
             us = {"cod":x[0],"descripcion":x[1]}
             list_provin.append(us)
         return json.dumps(list_provin)
-    if(codprovincia is not None):
-        bdcursor.execute("SELECT * FROM municipio where codprovi={}".format(codprovincia))
+    elif(coddir is not None):
+        bdcursor.execute("SELECT descripcion,codciudad,codpais FROM direccion where coddir={}".format(coddir))
         myresult = bdcursor.fetchall()
-        list_muni = []
+        list_provin = []
         for x in myresult:
-            us = {"cod":x[0],"descripcion":x[1]}
-            list_muni.append(us)
-        return json.dumps(list_muni)
-    if(codmunicipio is not None):
-        bdcursor.execute("SELECT * FROM sector where codmuni={}".format(codmunicipio))
-        myresult = bdcursor.fetchall()
-        list_sec = []
-        for x in myresult:
-            us = {"cod":x[0],"descripcion":x[1]}
-            list_sec.append(us)
-        return json.dumps(list_sec)
-    if(codsector is not None):
-        bdcursor.execute("SELECT * FROM calle where codsec={}".format(codsector))
-        myresult = bdcursor.fetchall()
-        list_calle = []
-        for x in myresult:
-            us = {"cod":x[0],"descripcion":x[1]}
-            list_calle.append(us)
-        return json.dumps(list_calle)    
+            us = {"descripcion":x[0],"codciudad":x[1],"codpais":x[2]}
+            list_provin.append(us)
+        return json.dumps(list_provin)
     
 
 
