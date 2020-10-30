@@ -114,9 +114,9 @@ def users():
             us = UserModelElement(x[0], x[1], x[2],x[3])
             list_users.append(us)
         return json.dumps(user_model_to_dict(list_users))
-@app.route('/user', methods=['POST', 'GET'])
+@app.route('/user', methods=['POST', 'GET','PUT'])
 def user():
-    if request.method == 'POST':
+    if request.method == 'PUT':
         us = user_model_from_dict(json.loads(request.get_data()))
         if(us[0].codusuario==1):
             bdcursor.execute("SELECT * FROM usuario Where `nickname`='{}' and `contrasena`='{}'".format(us[0].nickname,us[0].contrasena))
@@ -149,6 +149,54 @@ def user():
             us = UserEModelElement(x[0], x[1], x[2],x[3],x[4],x[5],x[6],x[7],x[8],x[9],x[10],x[11],x[12])
             list_users.append(us)
         return json.dumps(user_e_model_to_dict(list_users))
+
+@app.route('/direccion', methods=['GET'])
+def direccion():
+    codregion  = request.args.get('codregion', None)
+    codprovincia  = request.args.get('codprovincia', None)
+    codmunicipio  = request.args.get('codmunicipio', None)
+    codsector  = request.args.get('codsector', None)
+    if(codregion is None and codprovincia is None and codmunicipio is None and codsector is None):
+        bdcursor.execute("SELECT * FROM region")
+        myresult = bdcursor.fetchall()
+        list_region = []
+        for x in myresult:
+            us = {"cod":x[0],"descripcion":x[1]}
+            list_region.append(us)
+        return json.dumps(list_region)
+    if(codregion is not None):
+        bdcursor.execute("SELECT * FROM provincia where codreg={}".format(codregion))
+        myresult = bdcursor.fetchall()
+        list_provin = []
+        for x in myresult:
+            us = {"cod":x[0],"descripcion":x[1]}
+            list_provin.append(us)
+        return json.dumps(list_provin)
+    if(codprovincia is not None):
+        bdcursor.execute("SELECT * FROM municipio where codprovi={}".format(codprovincia))
+        myresult = bdcursor.fetchall()
+        list_muni = []
+        for x in myresult:
+            us = {"cod":x[0],"descripcion":x[1]}
+            list_muni.append(us)
+        return json.dumps(list_muni)
+    if(codmunicipio is not None):
+        bdcursor.execute("SELECT * FROM sector where codmuni={}".format(codmunicipio))
+        myresult = bdcursor.fetchall()
+        list_sec = []
+        for x in myresult:
+            us = {"cod":x[0],"descripcion":x[1]}
+            list_sec.append(us)
+        return json.dumps(list_sec)
+    if(codsector is not None):
+        bdcursor.execute("SELECT * FROM calle where codsec={}".format(codsector))
+        myresult = bdcursor.fetchall()
+        list_calle = []
+        for x in myresult:
+            us = {"cod":x[0],"descripcion":x[1]}
+            list_calle.append(us)
+        return json.dumps(list_calle)    
+    
 
 
 
