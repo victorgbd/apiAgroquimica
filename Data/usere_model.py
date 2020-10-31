@@ -34,9 +34,11 @@ class UserEModelElement:
     apellido: str
     correo: str
     contrasena: str
+    codpais: int
     pais: str
+    codciudad: int
     ciudad: str
-    coddir: str
+    coddir: int
     direccion: str
     tipo: str
     numeracion: str
@@ -49,14 +51,16 @@ class UserEModelElement:
         apellido = from_str(obj.get("apellido"))
         correo = from_str(obj.get("correo"))
         contrasena = from_str(obj.get("contrasena"))
+        codpais = int(from_str(obj.get("codpais")))
         pais = from_str(obj.get("pais"))
+        codciudad = int(from_str(obj.get("codciudad")))
         ciudad = from_str(obj.get("ciudad"))
-        coddir = from_str(obj.get("coddir"))
+        coddir = int(from_str(obj.get("coddir")))
         direccion = from_str(obj.get("direccion"))
         tipo = from_str(obj.get("tipo"))
         numeracion = from_str(obj.get("numeracion"))
         numerotelf = from_str(obj.get("numerotelf"))
-        return UserEModelElement(nombre, apellido, correo, contrasena, pais, ciudad, coddir, direccion, tipo, numeracion, numerotelf)
+        return UserEModelElement(nombre, apellido, correo, contrasena, codpais, pais, codciudad, ciudad, coddir, direccion, tipo, numeracion, numerotelf)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -64,9 +68,11 @@ class UserEModelElement:
         result["apellido"] = from_str(self.apellido)
         result["correo"] = from_str(self.correo)
         result["contrasena"] = from_str(self.contrasena)
+        result["codpais"] = from_str(str(self.codpais))
         result["pais"] = from_str(self.pais)
+        result["codciudad"] = from_str(str(self.codciudad))
         result["ciudad"] = from_str(self.ciudad)
-        result["coddir"] = from_str(self.coddir)
+        result["coddir"] = from_str(str(self.coddir))
         result["direccion"] = from_str(self.direccion)
         result["tipo"] = from_str(self.tipo)
         result["numeracion"] = from_str(self.numeracion)

@@ -87,33 +87,6 @@ bdcursor = mydb.cursor()
 # </body>
 # </html>"""
 
-@app.route('/users', methods=['POST', 'GET','PUT'])
-def users():
-    if request.method == 'POST':
-        us = user_model_from_dict(json.loads(request.get_data()))
-        query = "INSERT INTO `usuario`(`nickname`, `contrasena`, `tipoacceso`) VALUES ('{}', '{}','{}');".format(
-            us[0].nickname, us[0].contrasena,us[0].tipoacceso)
-        bdcursor.execute(query)
-        mydb.commit()
-        print(bdcursor.rowcount, "record inserted.")
-        return json.dumps("Usuario Insertado correctamente")
-    elif request.method == 'PUT':
-        us = user_model_from_dict(json.loads(request.get_data()))
-        query = "UPDATE `usuario` SET `nickname`='{}',`contrasena`='{}',`tipoacceso`='{}' WHERE `codusuario`='{}';".format(
-            us[0].nickname, us[0].contrasena, us[0].tipoacceso,us[0].codusuario)
-        bdcursor.execute(query)
-        mydb.commit()
-        print(bdcursor.rowcount, "record updated.")
-        return json.dumps("Usuario Actualizado correctamente")
-    else:
-        us = user_model_from_dict(json.loads(request.get_data()))
-        bdcursor.execute("SELECT * FROM usuario Where `nickname`='{}' and `contrasena`='{}'".format(us[0].nickname,us[0].contrasena))
-        myresult = bdcursor.fetchall()
-        list_users = []
-        for x in myresult:
-            us = UserModelElement(x[0], x[1], x[2],x[3])
-            list_users.append(us)
-        return json.dumps(user_model_to_dict(list_users))
 @app.route('/user', methods=['POST', 'GET','PUT'])
 def user():
     if request.method == 'PUT':
@@ -134,21 +107,27 @@ def user():
                 us = UserModelElement(x[0], x[1], x[2],x[3])
                 list_users.append(us)
             return json.dumps(user_model_to_dict(list_users))
+    elif request.method == 'POST':
+        det = user_e_model_from_dict(json.loads(request.get_data()))
+        bdcursor.callproc('sp_createusere',[det[0].nombre,det[0].apellido,det[0].correo,det[0].contrasena,
+        det[0].codciudad,det[0].codpais,det[0].direccion,det[0].tipo,det[0].numeracion,det[0].numerotelf])
+        mydb.commit()
+        return json.dumps("usuario insertado correctamente")
     else:
         email  = request.args.get('email', None)
         password  = request.args.get('password', None)
-        bdcursor.execute("SELECT p.nombre,p.apellido,c.correo,u.contrasena,pais.descripcion as pais"+
-        ",ciu.descripcion as ciudad,dir.coddir,dir.Descripcion as direccion,d.tipo,d.numeracion,tel.numero "+
-        "FROM cliente as c INNER JOIN persona as p on c.codper = p.codper INNER JOIN direccion as dir "+
-        "on p.coddir = dir.coddir INNER JOIN pais on dir.codpais = pais.codpais INNER JOIN provincia as ciu"+
-        " on dir.codciudad =ciu.codprovi INNER JOIN usuario as u on c.codusuario = u.codusuario inner join "+
-        "documento as d on p.coddocu=d.coddocu inner join telefono as tel on c.codtel=tel.codtel "+
-        "WHERE c.correo = '{}' AND u.contrasena='{}'".format(email,password))
+        bdcursor.execute("SELECT p.nombre,p.apellido,c.correo,u.contrasena,pais.codpais,pais.descripcion "+
+        "as pais,ciu.codprovi,ciu.descripcion as ciudad,dir.coddir,dir.Descripcion as direccion,"
+        +"d.tipo,d.numeracion,tel.numero FROM cliente as c INNER JOIN persona as p on c.codper = p.codper"+
+        " INNER JOIN direccion as dir on p.coddir = dir.coddir INNER JOIN pais on dir.codpais = pais.codpais"+
+        " INNER JOIN provincia as ciu on dir.codciudad =ciu.codprovi INNER JOIN usuario as u "+
+        "on c.codusuario = u.codusuario inner join documento as d on p.coddocu=d.coddocu inner join "+
+        "telefono as tel on c.codtel=tel.codtel WHERE c.correo = '{}' AND u.contrasena='{}'".format(email,password))
         myresult = bdcursor.fetchall()
         list_users = []
         print(myresult)
         for x in myresult:
-            us = UserEModelElement(x[0], x[1], x[2],x[3],x[4],x[5],str(x[6]),x[7],x[8],x[9],x[10])
+            us = UserEModelElement(x[0], x[1], x[2],x[3],x[4],x[5],x[6],x[7],x[8],x[9],x[10],x[11],x[12])
             list_users.append(us)
         return json.dumps(user_e_model_to_dict(list_users))
 
