@@ -21,6 +21,10 @@ from Data.factura_model import factura_model_from_dict
 from Data.factura_model import factura_model_to_dict
 from Data.factura_model import FacturaModelElement
 
+from Data.productos_model import productos_model_from_dict
+from Data.productos_model import productos_model_to_dict
+from Data.productos_model import ProductosModelElement
+
 upload_folder = os.path.abspath("./Fotos/")
 extenciones_permitidas = {'png', 'jpg', 'jpeg', 'gif'}
 
@@ -116,7 +120,7 @@ def user():
     else:
         email  = request.args.get('email', None)
         password  = request.args.get('password', None)
-        bdcursor.execute("SELECT p.nombre,p.apellido,c.correo,u.contrasena,pais.codpais,pais.descripcion "+
+        bdcursor.execute("SELECT p.nombre,p.apellido,c.codclie,c.correo,u.contrasena,pais.codpais,pais.descripcion "+
         "as pais,ciu.codprovi,ciu.descripcion as ciudad,dir.coddir,dir.Descripcion as direccion,"
         +"d.tipo,d.numeracion,tel.numero FROM cliente as c INNER JOIN persona as p on c.codper = p.codper"+
         " INNER JOIN direccion as dir on p.coddir = dir.coddir INNER JOIN pais on dir.codpais = pais.codpais"+
@@ -127,7 +131,7 @@ def user():
         list_users = []
         print(myresult)
         for x in myresult:
-            us = UserEModelElement(x[0], x[1], x[2],x[3],x[4],x[5],x[6],x[7],x[8],x[9],x[10],x[11],x[12])
+            us = UserEModelElement(x[0], x[1], x[2],x[3],x[4],x[5],x[6],x[7],x[8],x[9],x[10],x[11],x[12],x[13])
             list_users.append(us)
         return json.dumps(user_e_model_to_dict(list_users))
 
@@ -177,18 +181,18 @@ def factura():
         print(bdcursor.rowcount, "record inserted.")
         return json.dumps(myresult[0][0])
 
-@app.route('/factura/<int:id>', methods=['GET','DELETE'])
-def factura_by_id(id):
-    if request.method == 'GET':
-        bdcursor.execute("SELECT * FROM factura where numfact={}".format(id))
-        myresult = bdcursor.fetchall()
-        list_dtf = []
-        for x in myresult:
-            print(x)
-            dtf = FacturaModelElement(x[0],x[1],x[2],x[3],x[4],x[5],x[6],x[7])
-            list_dtf.append(dtf)
-        return json.dumps(factura_model_to_dict(list_dtf))
-    return json.dumps("Metodo no creado")
+# @app.route('/factura/<int:id>', methods=['GET','DELETE'])
+# def factura_by_id(id):
+#     if request.method == 'GET':
+#         bdcursor.execute("SELECT * FROM factura where numfact={}".format(id))
+#         myresult = bdcursor.fetchall()
+#         list_dtf = []
+#         for x in myresult:
+#             print(x)
+#             dtf = FacturaModelElement(x[0],x[1],x[2],x[3],x[4],x[5],x[6],x[7])
+#             list_dtf.append(dtf)
+#         return json.dumps(factura_model_to_dict(list_dtf))
+#     return json.dumps("Metodo no creado")
 
 @app.route('/dfactura', methods=['POST', 'PUT', 'GET'])
 def detallefacturas():
@@ -200,18 +204,35 @@ def detallefacturas():
         print(bdcursor.rowcount, "record inserted.")
         return json.dumps("Detalle de factura almacenado correctamente")
         
-@app.route('/dfactura/<int:id>', methods=['GET','DELETE'])
-def detallefactura(id):
+# @app.route('/dfactura/<int:id>', methods=['GET','DELETE'])
+# def detallefactura(id):
+#     if request.method == 'GET':
+#         bdcursor.execute("SELECT * FROM detalle_factura where numfact={}".format(id))
+#         myresult = bdcursor.fetchall()
+#         list_dtf = []
+#         for x in myresult:
+#             dtf = DetallefactModelElement(x[0],x[1],x[2],x[3],x[4])
+#             list_dtf.append(dtf)
+#         return json.dumps(detallefact_model_to_dict(list_dtf))
+#     return json.dumps("Metodo no creado")
+
+@app.route('/productos', methods=['GET'])
+def productos():
     if request.method == 'GET':
-        bdcursor.execute("SELECT * FROM detalle_factura where numfact={}".format(id))
+        bdcursor.execute("SELECT prod.codproducto,prod.descripcion,"+
+        "vsu.coduni,u.descripcion,vsu.cantext,vsu.precioventa,"+
+        "tip.codtipopro,tip.descripcion,prod.url_image FROM producto as prod "+
+        "INNER join tipo_de_producto as tip on prod.tipoprod = "+
+        "tip.codtipopro INNER JOIN productovsunidad as vsu on "+
+        "prod.codproducto=vsu.codproducto INNER JOIN unidad as u on "+
+        "vsu.coduni=u.coduni")
         myresult = bdcursor.fetchall()
         list_dtf = []
         for x in myresult:
-            dtf = DetallefactModelElement(x[0],x[1],x[2],x[3],x[4])
+            dtf = ProductosModelElement(str(x[0]),x[1],str(x[2]),x[3],str(x[4]),str(x[5]),str(x[6]),x[7],x[8])
             list_dtf.append(dtf)
-        return json.dumps(detallefact_model_to_dict(list_dtf))
+        return json.dumps(productos_model_to_dict(list_dtf))
     return json.dumps("Metodo no creado")
-
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

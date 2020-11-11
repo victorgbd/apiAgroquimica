@@ -32,8 +32,9 @@ def to_class(c: Type[T], x: Any) -> dict:
 class UserEModelElement:
     nombre: str
     apellido: str
+    codcli: int
     correo: str
-    contrasena: str
+    contrasena: int
     codpais: int
     pais: str
     codciudad: int
@@ -49,8 +50,9 @@ class UserEModelElement:
         assert isinstance(obj, dict)
         nombre = from_str(obj.get("nombre"))
         apellido = from_str(obj.get("apellido"))
+        codcli = int(from_str(obj.get("codcli")))
         correo = from_str(obj.get("correo"))
-        contrasena = from_str(obj.get("contrasena"))
+        contrasena = int(from_str(obj.get("contrasena")))
         codpais = int(from_str(obj.get("codpais")))
         pais = from_str(obj.get("pais"))
         codciudad = int(from_str(obj.get("codciudad")))
@@ -60,14 +62,15 @@ class UserEModelElement:
         tipo = from_str(obj.get("tipo"))
         numeracion = from_str(obj.get("numeracion"))
         numerotelf = from_str(obj.get("numerotelf"))
-        return UserEModelElement(nombre, apellido, correo, contrasena, codpais, pais, codciudad, ciudad, coddir, direccion, tipo, numeracion, numerotelf)
+        return UserEModelElement(nombre, apellido, codcli, correo, contrasena, codpais, pais, codciudad, ciudad, coddir, direccion, tipo, numeracion, numerotelf)
 
     def to_dict(self) -> dict:
         result: dict = {}
         result["nombre"] = from_str(self.nombre)
         result["apellido"] = from_str(self.apellido)
+        result["codcli"] = from_str(str(self.codcli))
         result["correo"] = from_str(self.correo)
-        result["contrasena"] = from_str(self.contrasena)
+        result["contrasena"] = from_str(str(self.contrasena))
         result["codpais"] = from_str(str(self.codpais))
         result["pais"] = from_str(self.pais)
         result["codciudad"] = from_str(str(self.codciudad))
