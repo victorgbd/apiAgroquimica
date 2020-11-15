@@ -172,7 +172,8 @@ def direccion():
 def factura():
     if request.method == 'POST':
         det = factura_model_from_dict(json.loads(request.get_data()))
-        bdcursor.callproc('sp_factura',[det[0].codcli, det[0].estado, det[0].tipfac, det[0].codemp, det[0].balance,det[0].total])
+        bdcursor.callproc('sp_factura',[det[0].codcli, det[0].estado, det[0].tipfac, det[0].codemp,
+         det[0].balance,det[0].total])
         mydb.commit()
         myresult=[]
         for result in bdcursor.stored_results():
@@ -233,6 +234,50 @@ def productos():
             list_dtf.append(dtf)
         return json.dumps(productos_model_to_dict(list_dtf))
     return json.dumps("Metodo no creado")
+
+@app.route('/recomendacion', methods=['GET'])
+def recomendacion():
+    codplanta  = request.args.get('codplanta', None)
+    codespecie  = request.args.get('codespecie', None)
+    codenfermedad = request.args.get('codenfermedad', None)
+
+    if(codplanta is None and codespecie is None and codenfermedad is None):
+        bdcursor.execute("SELECT * FROM planta")
+        myresult = bdcursor.fetchall()
+        list_plantas = []
+        for x in myresult:
+            us = {"cod":x[0],"descripcion":x[1]}
+            list_plantas.append(us)
+        return json.dumps(list_plantas)
+    elif(codplanta is not None and codespecie is not None and codenfermedad is not None):
+        bdcursor.execute("SELECT rec.codprod,rec.coduni,rec.cantidad FROM productovsefermedad "+
+        "as rec where rec.codenfer={} and rec.codespecie={} and rec.codplant={}".format(codenfermedad,codespecie,codplanta))
+        myresult = bdcursor.fetchall()
+        list_plantas = []
+        for x in myresult:
+            us = {"codprod":x[0],"coduni":x[1],"cantidad":x[2]}
+            list_plantas.append(us)
+        return json.dumps(list_plantas)
+
+    elif(codplanta is not None):
+        bdcursor.execute("SELECT codespecie,descripcion FROM especie where codplant={}".format(codplanta))
+        myresult = bdcursor.fetchall()
+        list_especies = []
+        for x in myresult:
+            us = {"cod":x[0],"descripcion":x[1]}
+            list_especies.append(us)
+        return json.dumps(list_especies)
+    elif(codespecie is not None):
+        bdcursor.execute("select e.codenfer,e.descripcion from enfermedad as e INNER JOIN "+
+        "especievsenfermedad as rec on e.codenfer=rec.codenfer WHERE rec.codespecie={}".format(codespecie))
+        myresult = bdcursor.fetchall()
+        list_enfermedades = []
+        for x in myresult:
+            us = {"cod":x[0],"descripcion":x[1]}
+            list_enfermedades.append(us)
+        return json.dumps(list_enfermedades)
+
+        
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
