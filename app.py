@@ -5,9 +5,7 @@ from werkzeug.utils import secure_filename
 import mysql.connector
 from PIL import Image
 # from predict import IA
-from Data.user_model import user_model_from_dict
-from Data.user_model import user_model_to_dict
-from Data.user_model import UserModelElement
+
 
 from Data.usere_model import user_e_model_from_dict
 from Data.usere_model import user_e_model_to_dict
@@ -91,26 +89,28 @@ bdcursor = mydb.cursor()
 # </body>
 # </html>"""
 
-@app.route('/user', methods=['POST', 'GET','PUT'])
+@app.route('/user', methods=['POST', 'GET'])
 def user():
-    if request.method == 'PUT':
-        us = user_model_from_dict(json.loads(request.get_data()))
-        if(us[0].codusuario==1):
-            bdcursor.execute("SELECT * FROM usuario Where `nickname`='{}' and `contrasena`='{}'".format(us[0].nickname,us[0].contrasena))
-            myresult = bdcursor.fetchall()
-            list_users = []
-            for x in myresult:
-                us = UserModelElement(x[0], x[1], x[2],x[3])
-                list_users.append(us)
-            return json.dumps(user_model_to_dict(list_users))
+    nickname  = request.args.get('nickname', None)
+    password  = request.args.get('contrasena', None)
+    
+    if(nickname is not None and password is not None):
+        print(nickname)
+        bdcursor.execute("SELECT * FROM usuario Where `nickname`='{}' and `contrasena`='{}'".format(nickname,password))
+        myresult = bdcursor.fetchall()
+        if (len(myresult)==1):
+            print({"flag":True})
+            return json.dumps({"flag":True})
         else:
-            bdcursor.execute("SELECT * FROM usuario Where `nickname`='{}'".format(us[0].nickname))
-            myresult = bdcursor.fetchall()
-            list_users = []
-            for x in myresult:
-                us = UserModelElement(x[0], x[1], x[2],x[3])
-                list_users.append(us)
-            return json.dumps(user_model_to_dict(list_users))
+            print({"flag":False})
+            return json.dumps({"flag":False})
+    elif(nickname is not None ):
+        bdcursor.execute("SELECT * FROM usuario Where `nickname`='{}'".format(nickname))
+        myresult = bdcursor.fetchall()
+        if (len(myresult)==1):
+            return json.dumps({"flag":True})
+        else:
+            return json.dumps({"flag":False})
     elif request.method == 'POST':
         det = user_e_model_from_dict(json.loads(request.get_data()))
         bdcursor.callproc('sp_createusere',[det[0].nombre,det[0].apellido,det[0].correo,det[0].contrasena,
@@ -182,18 +182,7 @@ def factura():
         print(bdcursor.rowcount, "record inserted.")
         return json.dumps(myresult[0][0])
 
-# @app.route('/factura/<int:id>', methods=['GET','DELETE'])
-# def factura_by_id(id):
-#     if request.method == 'GET':
-#         bdcursor.execute("SELECT * FROM factura where numfact={}".format(id))
-#         myresult = bdcursor.fetchall()
-#         list_dtf = []
-#         for x in myresult:
-#             print(x)
-#             dtf = FacturaModelElement(x[0],x[1],x[2],x[3],x[4],x[5],x[6],x[7])
-#             list_dtf.append(dtf)
-#         return json.dumps(factura_model_to_dict(list_dtf))
-#     return json.dumps("Metodo no creado")
+
 
 @app.route('/dfactura', methods=['POST', 'PUT', 'GET'])
 def detallefacturas():
@@ -205,17 +194,7 @@ def detallefacturas():
         print(bdcursor.rowcount, "record inserted.")
         return json.dumps("Detalle de factura almacenado correctamente")
         
-# @app.route('/dfactura/<int:id>', methods=['GET','DELETE'])
-# def detallefactura(id):
-#     if request.method == 'GET':
-#         bdcursor.execute("SELECT * FROM detalle_factura where numfact={}".format(id))
-#         myresult = bdcursor.fetchall()
-#         list_dtf = []
-#         for x in myresult:
-#             dtf = DetallefactModelElement(x[0],x[1],x[2],x[3],x[4])
-#             list_dtf.append(dtf)
-#         return json.dumps(detallefact_model_to_dict(list_dtf))
-#     return json.dumps("Metodo no creado")
+
 
 @app.route('/productos', methods=['GET'])
 def productos():
@@ -253,11 +232,20 @@ def recomendacion():
         bdcursor.execute("SELECT rec.codprod,rec.coduni,rec.cantidad FROM productovsefermedad "+
         "as rec where rec.codenfer={} and rec.codespecie={} and rec.codplant={}".format(codenfermedad,codespecie,codplanta))
         myresult = bdcursor.fetchall()
-        list_plantas = []
+        list_productos = []
         for x in myresult:
-            us = {"codprod":x[0],"coduni":x[1],"cantidad":x[2]}
-            list_plantas.append(us)
-        return json.dumps(list_plantas)
+            bdcursor.execute("SELECT prod.codproducto,prod.descripcion,"+
+            "vsu.coduni,u.descripcion,vsu.cantext,vsu.precioventa,"+
+            "tip.codtipopro,tip.descripcion,prod.url_image FROM producto as prod "+
+            "INNER join tipo_de_producto as tip on prod.tipoprod = "+
+            "tip.codtipopro INNER JOIN productovsunidad as vsu on "+
+            "prod.codproducto=vsu.codproducto INNER JOIN unidad as u on "+
+            "vsu.coduni=u.coduni where prod.codproducto={} and u.coduni={}".format(x[0],x[1]))
+            myresult = bdcursor.fetchall()
+            for x in myresult:
+                dtf = ProductosModelElement(str(x[0]),x[1],str(x[2]),x[3],str(x[4]),str(x[5]),str(x[6]),x[7],x[8])
+                list_productos.append(dtf)
+        return json.dumps(productos_model_to_dict(list_productos))
 
     elif(codplanta is not None):
         bdcursor.execute("SELECT codespecie,descripcion FROM especie where codplant={}".format(codplanta))

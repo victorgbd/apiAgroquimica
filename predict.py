@@ -38,22 +38,22 @@ class IA:
               index.append(e)
       print(aux)
       print(indexs)
-      li=['Manzana>Malus_domestica>Sarna_del_Manzano(Venturia_inaequalis)', 'Manzana>Malus_domestica>Podredumbre_Negra(Botryosphaeria obtusa)'
-      , 'Manzana>Malus_domestica>Gymnosporangium juniperi-virginianae', 'Manzana>Malus_domestica>Saludable'
-      , 'Arándano>Vaccinium_corymbosum>Saludable', 'Cereza>Rainer>Podosphaera_pannosa', 'Cereza>Rainer>Saludable'
-      , 'Maíz>Zea_mays>Mancha_gris(Cercospora_zeae-maydis)', 'Maíz>Zea_mays>Roya_común(Puccinia_sorghi)'
-      , 'Maíz>Zea_mays>Tizón_de_la_hoja(Exserohilum_turcicum)', 'Maíz>Zea_mays>Saludable', 'Uva>Vitis_rotundifolia>Podredumbre_Negra(Guignardia_bidwellii)'
-      , 'Uva>Vitis_rotundifolia>Phaeomoniella_aleophilum', 'Uva>Vitis_rotundifolia>Tizón(Pseudocercospora_vitis)', 'Uva>Vitis_rotundifolia>Saludable'
-      , 'Naranja>Citrus_sinensis>Huanglongbing', 'Pera>Pyrus_communis>Xanthomonas_campestris', 'Pera>Pyrus_communis>Saludable'
-      , 'Ají>Capsicum_annuum>Xanthomonas_campestris', 'Ají>Capsicum_annuum>Saludable', 'Papa>Solanum_tuberosum>Tizón_temprano(Alternaria_solani)'
-      , 'Papa>Solanum_tuberosum>Tizón_tardío(Phytophthora_infestans)', 'Papa>Solanum_tuberosum>Saludable'
-      , 'Frambuesa>Rubus_idaeus>Saludable', 'Soja>Glycine_max>Saludable'
-      , 'Calabaza>Cucurbita_ficifolia>Oídio(Erysiphe_cichoracearum)', 'Fresa>Fragaria_vesca>Diplocarpon_earlianum', 'Fresa>Fragaria_vesca>Saludable'
-      , 'Tomate>Solanum_lycopersicum>Xanthomonas_campestris', 'Tomate>Solanum_lycopersicum>Tizón_Temprano(Alternaria_solani)'
-      , 'Tomate>Solanum_lycopersicum>Tizón_tardío(Phytophthora_infestans)', 'Tomate>Solanum_lycopersicum>Cladosporiosis(Fulvia_fulva)'
-      , 'Tomate>Solanum_lycopersicum>Mancha_de_hoja(Septoria_lycopersici)', 'Tomate>Solanum_lycopersicum>Ácaro_rojo(Tetranychus_urticae)'
-      , 'Tomate>Solanum_lycopersicum>Mancha_anillada(Corynespora_cassiicola)'
-      , 'Tomate>Solanum_lycopersicum>TYLCV(Yellow_Leaf_Curl_Virus)', 'Tomate>Solanum_lycopersicum>TOMV(Virus_del_Mosaico)', 'Tomate>Solanum_lycopersicum>Saludable']
+      li=['6>Manzana>3>Malus_domestica>1>Sarna_del_Manzano(Venturia_inaequalis)', '6>Manzana>3>Malus_domestica>2>Podredumbre_Negra(Botryosphaeria obtusa)'
+      , '6>Manzana>3>Malus_domestica>3>Gymnosporangium juniperi-virginianae', '6>Manzana>3>Malus_domestica>-1>Saludable'
+      , '7>Arándano>4>Vaccinium_corymbosum>-1>Saludable', '5>Cereza>5>Rainer>5>Podosphaera_pannosa', '5>Cereza>5>Rainer>-1>Saludable'
+      , '4>Maíz>6>Zea_mays>6>Mancha_gris(Cercospora_zeae-maydis)', '4>Maíz>6>Zea_mays>7>Roya_común(Puccinia_sorghi)'
+      , '4>Maíz>6>Zea_mays>8>Tizón_de_la_hoja(Exserohilum_turcicum)', '4>Maíz>6>Zea_mays>-1>Saludable', '3>Uva>7>Vitis_rotundifolia>9>Podredumbre_Negra(Guignardia_bidwellii)'
+      , '3>Uva>7>Vitis_rotundifolia>10>Phaeomoniella_aleophilum', '3>Uva>7>Vitis_rotundifolia>11>Tizón(Pseudocercospora_vitis)', '3>Uva>Vitis_rotundifolia>-1>Saludable'
+      , '2>Naranja>8>Citrus_sinensis>12>Huanglongbing', '8>Pera>9>Pyrus_communis>13>Xanthomonas_campestris', '8>Pera>9>Pyrus_communis>-1>Saludable'
+      , '9>Ají>10>Capsicum_annuum>13>Xanthomonas_campestris', '9>Ají>10>Capsicum_annuum>-1>Saludable', '10>Papa>11>Solanum_tuberosum>14>Tizón_temprano(Alternaria_solani)'
+      , '10>Papa>11>Solanum_tuberosum>15>Tizón_tardío(Phytophthora_infestans)', '10>Papa>11>Solanum_tuberosum>-1>Saludable'
+      , '11>Frambuesa>12>Rubus_idaeus>-1>Saludable', '12>Soja>13>Glycine_max>-1>Saludable'
+      , '13>Calabaza>14>Cucurbita_ficifolia>16>Oídio(Erysiphe_cichoracearum)', '14>Fresa>15>Fragaria_vesca>17>Diplocarpon_earlianum', '14>Fresa>15>Fragaria_vesca>-1>Saludable'
+      , '1>Tomate>1>Solanum_lycopersicum>13>Xanthomonas_campestris', '1>Tomate>1>Solanum_lycopersicum>14>Tizón_Temprano(Alternaria_solani)'
+      , '1>Tomate>1>Solanum_lycopersicum>15>Tizón_tardío(Phytophthora_infestans)', '1>Tomate>1>Solanum_lycopersicum>18>Cladosporiosis(Fulvia_fulva)'
+      , '1>Tomate>1>Solanum_lycopersicum>19>Mancha_de_hoja(Septoria_lycopersici)', '1>Tomate>1>Solanum_lycopersicum>20>Ácaro_rojo(Tetranychus_urticae)'
+      , '1>Tomate>1>Solanum_lycopersicum>21>Mancha_anillada(Corynespora_cassiicola)'
+      , '1>Tomate>1>Solanum_lycopersicum>22>TYLCV(Yellow_Leaf_Curl_Virus)', '1>Tomate>1>Solanum_lycopersicum>23>TOMV(Virus_del_Mosaico)', '1>Tomate>1>Solanum_lycopersicum>-1>Saludable']
       
       enfermedades=[]
       for i,e in enumerate(index):
@@ -66,5 +66,5 @@ class IA:
       cadena = []
       for i,x in enumerate(enfermedades):
         cadena=x.split('>')
-        lista.append({'planta':cadena[0],'especie':cadena[1],'enfermedad':cadena[2],'porc':aux[i]})
+        lista.append({'codplanta':cadena[0],'planta':cadena[1],'codespecie':cadena[2],'especie':cadena[3],'codenfer':cadena[4],'enfermedad':cadena[5],'porc':aux[i]})
       return json.dumps(lista)
