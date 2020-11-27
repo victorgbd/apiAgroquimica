@@ -22,6 +22,7 @@ from Data.factura_model import FacturaModelElement
 from Data.productos_model import productos_model_from_dict
 from Data.productos_model import productos_model_to_dict
 from Data.productos_model import ProductosModelElement
+from Data.productos_model import Unidad
 
 upload_folder = os.path.abspath("./Fotos/")
 extenciones_permitidas = {'png', 'jpg', 'jpeg', 'gif'}
@@ -199,19 +200,21 @@ def detallefacturas():
 @app.route('/productos', methods=['GET'])
 def productos():
     if request.method == 'GET':
-        bdcursor.execute("SELECT prod.codproducto,prod.descripcion,"+
-        "vsu.coduni,u.descripcion,vsu.cantext,vsu.precioventa,"+
-        "tip.codtipopro,tip.descripcion,prod.url_image FROM producto as prod "+
-        "INNER join tipo_de_producto as tip on prod.tipoprod = "+
-        "tip.codtipopro INNER JOIN productovsunidad as vsu on "+
-        "prod.codproducto=vsu.codproducto INNER JOIN unidad as u on "+
-        "vsu.coduni=u.coduni")
-        myresult = bdcursor.fetchall()
-        list_dtf = []
-        for x in myresult:
-            dtf = ProductosModelElement(str(x[0]),x[1],str(x[2]),x[3],str(x[4]),str(x[5]),str(x[6]),x[7],x[8])
-            list_dtf.append(dtf)
-        return json.dumps(productos_model_to_dict(list_dtf))
+        bdcursor.execute("SELECT prod.codproducto,prod.descripcion,tip.codtipopro,tip.descripcion,"+
+        "prod.url_image FROM producto as prod INNER join tipo_de_producto as tip on prod.tipoprod = tip.codtipopro")
+        product = bdcursor.fetchall()
+        bdcursor.execute("SELECT u.coduni,u.descripcion,pvu.codproducto,pvu.precioventa,"+
+        "pvu.cantext from unidad as u INNER JOIN productovsunidad as pvu on u.coduni=pvu.coduni")
+        unit = bdcursor.fetchall()
+        list_prod = []
+        for x in product:
+            list_unid=[]
+            for y in unit:
+                if(x[0]==y[2]):
+                    list_unid.append(Unidad(int(y[0]),str(y[1]),str(y[3]),str(y[4])))
+            dtf = ProductosModelElement(int(x[0]),str(x[1]),int(x[2]),str(x[3]),str(x[4]),list_unid,-1)
+            list_prod.append(dtf)
+        return json.dumps(productos_model_to_dict(list_prod))
     return json.dumps("Metodo no creado")
 
 @app.route('/recomendacion', methods=['GET'])
@@ -232,20 +235,24 @@ def recomendacion():
         bdcursor.execute("SELECT rec.codprod,rec.coduni,rec.cantidad FROM productovsefermedad "+
         "as rec where rec.codenfer={} and rec.codespecie={} and rec.codplant={}".format(codenfermedad,codespecie,codplanta))
         myresult = bdcursor.fetchall()
-        list_productos = []
+        print(myresult)
+        list_prod = []
         for x in myresult:
-            bdcursor.execute("SELECT prod.codproducto,prod.descripcion,"+
-            "vsu.coduni,u.descripcion,vsu.cantext,vsu.precioventa,"+
-            "tip.codtipopro,tip.descripcion,prod.url_image FROM producto as prod "+
-            "INNER join tipo_de_producto as tip on prod.tipoprod = "+
-            "tip.codtipopro INNER JOIN productovsunidad as vsu on "+
-            "prod.codproducto=vsu.codproducto INNER JOIN unidad as u on "+
-            "vsu.coduni=u.coduni where prod.codproducto={} and u.coduni={}".format(x[0],x[1]))
-            myresult = bdcursor.fetchall()
-            for x in myresult:
-                dtf = ProductosModelElement(str(x[0]),x[1],str(x[2]),x[3],str(x[4]),str(x[5]),str(x[6]),x[7],x[8])
-                list_productos.append(dtf)
-        return json.dumps(productos_model_to_dict(list_productos))
+            bdcursor.execute("SELECT prod.codproducto,prod.descripcion,tip.codtipopro,tip.descripcion,"+
+            "prod.url_image FROM producto as prod INNER join tipo_de_producto as tip on prod.tipoprod = tip.codtipopro where prod.codproducto={}".format(x[0]))
+            product = bdcursor.fetchall()
+            bdcursor.execute("SELECT u.coduni,u.descripcion,pvu.codproducto,pvu.precioventa,"+
+            "pvu.cantext from unidad as u INNER JOIN productovsunidad as pvu on u.coduni=pvu.coduni where u.coduni={}".format(x[1]))
+            unit = bdcursor.fetchall()
+            for x in product:
+                list_unid=[]
+                for y in unit:
+                    if(x[0]==y[2]):
+                        list_unid.append(Unidad(int(y[0]),str(y[1]),str(y[3]),str(y[4])))
+                dtf = ProductosModelElement(int(x[0]),str(x[1]),int(x[2]),str(x[3]),str(x[4]),list_unid,-1)
+                list_prod.append(dtf)
+        return json.dumps(productos_model_to_dict(list_prod))
+            
 
     elif(codplanta is not None):
         bdcursor.execute("SELECT codespecie,descripcion FROM especie where codplant={}".format(codplanta))
