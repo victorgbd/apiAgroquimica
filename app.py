@@ -4,7 +4,7 @@ import os
 from werkzeug.utils import secure_filename
 import mysql.connector
 from PIL import Image
-# from predict import IA
+from predict import IA
 
 
 from Data.usere_model import user_e_model_from_dict
@@ -43,7 +43,7 @@ def permitidas(filename):
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 app.config["UPLOAD_FOLDER"] = upload_folder
-# redn = IA()
+redn = IA()
 
 mydb = mysql.connector.connect(
     host="localhost",
@@ -54,41 +54,41 @@ mydb = mysql.connector.connect(
 bdcursor = mydb.cursor()
 
 
-# @app.route("/upload", methods=["GET", "POST"])
-# def upload_file():
-#     try:
-#         if request.method == "POST":
-#             f = request.files["file"]
-#             filename = secure_filename(f.filename)
-#             if filename == '':
-#                 return "Sube algun archivo"
-#             if f and permitidas(filename):
-#                 f.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
-#                 print(f)
-#                 print(filename)
-#                 if verifica(upload_folder+'/'+filename):
-#                     prediccion = redn.predict(upload_folder+'/'+filename)
-#                     os.remove(upload_folder+'/'+filename)
-#                     return prediccion
-#                 os.remove(upload_folder+'/'+filename)
-#             return "archivo no permitido"
-#     except IOError:
-#         return "ui un erroi en el archivo"
+@app.route("/upload", methods=["GET", "POST"])
+def upload_file():
+    try:
+        if request.method == "POST":
+            f = request.files["file"]
+            filename = secure_filename(f.filename)
+            if filename == '':
+                return "Sube algun archivo"
+            if f and permitidas(filename):
+                f.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+                print(f)
+                print(filename)
+                if verifica(upload_folder+'/'+filename):
+                    prediccion = redn.predict(upload_folder+'/'+filename)
+                    os.remove(upload_folder+'/'+filename)
+                    return prediccion
+                os.remove(upload_folder+'/'+filename)
+            return "archivo no permitido"
+    except IOError:
+        return "ui un erroi en el archivo"
 
-#     return """<!DOCTYPE html>
-# <html>
-# <head>
-#     <meta charset="utf-8">
-#     <title>Upload File</title>
-# </head>
-# <body>
-#     <h1>Upload File</h1>
-#     <form method="POST" enctype="multipart/form-data">
-#         <input type="file" name="file">
-#         <input type="submit" value="Upload">
-#     </form>
-# </body>
-# </html>"""
+    return """<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Upload File</title>
+</head>
+<body>
+    <h1>Upload File</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <input type="submit" value="Upload">
+    </form>
+</body>
+</html>"""
 
 @app.route('/user', methods=['POST', 'GET'])
 def user():
@@ -235,7 +235,6 @@ def recomendacion():
         bdcursor.execute("SELECT rec.codprod,rec.coduni,rec.cantidad FROM productovsefermedad "+
         "as rec where rec.codenfer={} and rec.codespecie={} and rec.codplant={}".format(codenfermedad,codespecie,codplanta))
         myresult = bdcursor.fetchall()
-        print(myresult)
         list_prod = []
         for x in myresult:
             bdcursor.execute("SELECT prod.codproducto,prod.descripcion,tip.codtipopro,tip.descripcion,"+
