@@ -44,6 +44,7 @@ class UserEModelElement:
     tipo: str
     numeracion: str
     numerotelf: str
+    codusu: int
 
     @staticmethod
     def from_dict(obj: Any) -> 'UserEModelElement':
@@ -62,7 +63,8 @@ class UserEModelElement:
         tipo = from_str(obj.get("tipo"))
         numeracion = from_str(obj.get("numeracion"))
         numerotelf = from_str(obj.get("numerotelf"))
-        return UserEModelElement(nombre, apellido, codcli, correo, contrasena, codpais, pais, codciudad, ciudad, coddir, direccion, tipo, numeracion, numerotelf)
+        codusu = int(from_str(obj.get("codusu")))
+        return UserEModelElement(nombre, apellido, codcli, correo, contrasena, codpais, pais, codciudad, ciudad, coddir, direccion, tipo, numeracion, numerotelf, codusu)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -80,6 +82,7 @@ class UserEModelElement:
         result["tipo"] = from_str(self.tipo)
         result["numeracion"] = from_str(self.numeracion)
         result["numerotelf"] = from_str(self.numerotelf)
+        result["codusu"] = from_str(str(self.codusu))
         return result
 
 

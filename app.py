@@ -24,6 +24,14 @@ from Data.productos_model import productos_model_to_dict
 from Data.productos_model import ProductosModelElement
 from Data.productos_model import Unidad
 
+from Data.dispositivo_model import dispositivo_model_from_dict
+from Data.dispositivo_model import dispositivo_model_to_dict
+from Data.dispositivo_model import DispositivoModelElement
+
+from Data.historialdisp_model import historialdisp_model_from_dict
+from Data.historialdisp_model import historialdisp_model_to_dict
+from Data.historialdisp_model import HistorialdispModelElement
+
 upload_folder = os.path.abspath("./Fotos/")
 extenciones_permitidas = {'png', 'jpg', 'jpeg', 'gif'}
 
@@ -123,7 +131,7 @@ def user():
         password  = request.args.get('password', None)
         bdcursor.execute("SELECT p.nombre,p.apellido,c.codclie,c.correo,u.contrasena,pais.codpais,pais.descripcion "+
         "as pais,ciu.codprovi,ciu.descripcion as ciudad,dir.coddir,dir.Descripcion as direccion,"
-        +"d.tipo,d.numeracion,tel.numero FROM cliente as c INNER JOIN persona as p on c.codper = p.codper"+
+        +"d.tipo,d.numeracion,tel.numero,u.codusuario FROM cliente as c INNER JOIN persona as p on c.codper = p.codper"+
         " INNER JOIN direccion as dir on p.coddir = dir.coddir INNER JOIN pais on dir.codpais = pais.codpais"+
         " INNER JOIN provincia as ciu on dir.codciudad =ciu.codprovi INNER JOIN usuario as u "+
         "on c.codusuario = u.codusuario inner join documento as d on p.coddocu=d.coddocu inner join "+
@@ -132,7 +140,7 @@ def user():
         list_users = []
         print(myresult)
         for x in myresult:
-            us = UserEModelElement(x[0], x[1], x[2],x[3],x[4],x[5],x[6],x[7],x[8],x[9],x[10],x[11],x[12],x[13])
+            us = UserEModelElement(x[0], x[1], x[2],x[3],x[4],x[5],x[6],x[7],x[8],x[9],x[10],x[11],x[12],x[13],x[14])
             list_users.append(us)
         return json.dumps(user_e_model_to_dict(list_users))
 
@@ -271,7 +279,21 @@ def recomendacion():
             list_enfermedades.append(us)
         return json.dumps(list_enfermedades)
 
-        
+@app.route('/dispositivo', methods=['POST','PUT'])
+def dispositivo():
+    if request.method == 'POST':
+        dis = dispositivo_model_from_dict(json.loads(request.get_data()))
+        bdcursor.execute("INSERT INTO `dispositivo`(`descripcion`, `imei`, `codusuario`) VALUES ({},{},{})".format(dis[0].descripcion,dis[0].imei,dis[0].codusu))
+        mydb.commit()
+        print(bdcursor.rowcount, "record inserted.")
+    
+@app.route('/historialdisp', methods=['POST','PUT'])
+def historialdisp():
+    if request.method == 'POST':
+        his = historialdisp_model_from_dict(json.loads(request.get_data()))
+        bdcursor.callproc('sp_historialdisp',[his[0].codusu,his[0].coddisp,his[0].latitud,his[0].longitud])
+        mydb.commit()
+        print(bdcursor.rowcount, "record inserted.")
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
